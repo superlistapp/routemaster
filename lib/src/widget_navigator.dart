@@ -233,7 +233,7 @@ class WidgetPage<T> extends Page<T> with RouteDataPage<T> {
   //   child: _child,
   // );
 
-  WidgetPage({required this.child});
+  WidgetPage({required this.child, required super.name});
 
   @override
   Route<T> createRoute(BuildContext context) {
