@@ -1,15 +1,13 @@
 library routemaster;
 
-export 'src/parser.dart';
-export 'src/pages/guard.dart';
-export 'src/pages/transition_page.dart';
-
 import 'dart:async';
 import 'dart:math';
+
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:collection/collection.dart';
+
 import 'src/not_found_page.dart';
 import 'src/pages/guard.dart';
 import 'src/pages/transition_page.dart';
@@ -17,12 +15,16 @@ import 'src/path_parser.dart';
 import 'src/system_nav.dart';
 import 'src/trie_router/trie_router.dart';
 
+export 'src/pages/guard.dart';
+export 'src/pages/transition_page.dart';
+export 'src/parser.dart';
+
+part 'src/observers.dart';
+part 'src/pages/flow_page.dart';
 part 'src/pages/page_stack.dart';
-part 'src/pages/tab_pages.dart';
 part 'src/pages/pages.dart';
 part 'src/pages/stack_page.dart';
-part 'src/pages/flow_page.dart';
-part 'src/observers.dart';
+part 'src/pages/tab_pages.dart';
 part 'src/route_data.dart';
 part 'src/route_history.dart';
 part 'src/widget_navigator.dart';
@@ -360,7 +362,20 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
   Future<bool> popRoute() async {
     assert(!_isDisposed);
 
-    return history.back();
+    final navigator = _state.stack._attachedNavigator!;
+    final currentRoute = navigator.currentRoute();
+    final isPageRoute = currentRoute is PageRoute;
+    if (isPageRoute) {
+      return history.back();
+    }
+
+    final popResult = await navigator.maybePop();
+    if (popResult) {
+      _state.stack.notifyListeners();
+      return true;
+    }
+
+    return false;
   }
 
   /// Attempts to pops the top-level route. Returns `true` if a route was
@@ -1499,6 +1514,21 @@ class _StackNavigatorState extends NavigatorState {
   void dispose() {
     (widget as _StackNavigator).stack._attachedNavigator = null;
     super.dispose();
+  }
+}
+
+extension on _StackNavigatorState {
+  /// Returns the current route on the Navigator
+  Route<dynamic>? currentRoute() {
+    Route<dynamic>? result;
+
+    // Workaround (never pops, predicate always returns true)
+    popUntil((route) {
+      result = route;
+      return true;
+    });
+
+    return result;
   }
 }
 
