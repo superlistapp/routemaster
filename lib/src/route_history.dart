@@ -2,7 +2,7 @@ part of '../routemaster.dart';
 
 /// Allows navigating through the router's chronological history.
 class RouteHistory {
-  final _RoutemasterState _state;
+  final RoutemasterState _state;
 
   RouteHistory._(this._state);
 
