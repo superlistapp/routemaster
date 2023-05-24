@@ -75,7 +75,7 @@ abstract class PageState<T extends StatefulPage<dynamic>>
   /// Initializes the state for a [StatefulPage].
   PageState();
 
-  _RoutemasterState? _routemasterState;
+  RoutemasterState? _routemasterState;
 
   @override
   RouteData get routeData => _routeData!;

@@ -122,11 +122,11 @@ class RelativeRouteMap extends RouteMap {
 /// For example: `Routemaster.of(context).push('/path')`
 class Routemaster {
   // The current router delegate. This can change if the delegate is recreated.
-  late final _RoutemasterState _state;
+  late final RoutemasterState _state;
   final BuildContext _context;
 
   Routemaster._({
-    required _RoutemasterState state,
+    required RoutemasterState state,
     required BuildContext context,
   })  : _context = context,
         _state = state;
@@ -314,12 +314,14 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
     PageStack stack,
   )? navigatorBuilder;
 
+  final bool Function(RoutemasterState)? handlePopRoute;
+
   /// Allows navigating through the chronological history of routes.
   ///
   /// This is the routes that the user has recently seen.
   RouteHistory get history => _state.history;
 
-  _RoutemasterState _state = _RoutemasterState();
+  RoutemasterState _state = RoutemasterState();
   bool _isBuilding = false;
   bool _isDisposed = false;
   late BuildContext _context;
@@ -332,6 +334,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
     required this.routesBuilder,
     this.transitionDelegate,
     this.observers = const [],
+    this.handlePopRoute,
   }) : navigatorBuilder = null {
     _state.delegate = this;
   }
@@ -343,6 +346,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
     required this.routesBuilder,
     required this.navigatorBuilder,
     this.observers = const [],
+    this.handlePopRoute,
   }) : transitionDelegate = null {
     _state.delegate = this;
   }
@@ -361,6 +365,9 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
   @override
   Future<bool> popRoute() async {
     assert(!_isDisposed);
+
+    final handled = handlePopRoute?.call(_state);
+    if (handled ?? false) return true;
 
     final navigator = _state.stack._attachedNavigator!;
     final currentRoute = navigator.currentRoute();
@@ -1195,7 +1202,7 @@ class _RedirectResult extends _PageResult {
 }
 
 class _PushObserver extends NavigatorObserver {
-  final _RoutemasterState state;
+  final RoutemasterState state;
 
   _PushObserver(this.state);
 
@@ -1207,7 +1214,7 @@ class _PushObserver extends NavigatorObserver {
 
 /// Used internally so descendent widgets can use `Routemaster.of(context)`.
 class _RoutemasterWidget extends InheritedWidget {
-  final _RoutemasterState state;
+  final RoutemasterState state;
   final RouteData routeData;
 
   const _RoutemasterWidget({
@@ -1224,7 +1231,7 @@ class _RoutemasterWidget extends InheritedWidget {
 
 /// Maintains the router's state so [RoutemasterDelegate] can be replaced but
 /// still maintain its state.
-class _RoutemasterState {
+class RoutemasterState {
   final stack = PageStack();
   late final history = RouteHistory._(this);
   RouteMap? routeMap;
