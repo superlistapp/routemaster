@@ -54,7 +54,7 @@ class PageStack extends ChangeNotifier {
       },
     ).toList();
 
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       // Flushes out any removed pages
       _routeMap = newRouteMap;
     });

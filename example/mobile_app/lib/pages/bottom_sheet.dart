@@ -117,16 +117,12 @@ const BoxShadow _kDefaultBoxShadow =
 
 class _CupertinoBottomSheetContainer extends StatelessWidget {
   final Widget child;
-  final Color? backgroundColor;
   final Radius topRadius;
-  final BoxShadow? shadow;
 
   const _CupertinoBottomSheetContainer({
     Key? key,
     required this.child,
-    this.backgroundColor,
     required this.topRadius,
-    this.shadow,
   }) : super(key: key);
 
   @override
@@ -134,17 +130,17 @@ class _CupertinoBottomSheetContainer extends StatelessWidget {
     final topSafeAreaPadding = MediaQuery.of(context).padding.top;
     final topPadding = _kPreviousPageVisibleOffset + topSafeAreaPadding;
 
-    final _shadow = shadow ?? _kDefaultBoxShadow;
     BoxShadow(blurRadius: 10, color: Colors.black12, spreadRadius: 5);
-    final _backgroundColor =
-        backgroundColor ?? CupertinoTheme.of(context).scaffoldBackgroundColor;
+    final _backgroundColor = CupertinoTheme.of(context).scaffoldBackgroundColor;
     return Padding(
       padding: EdgeInsets.only(top: topPadding),
       child: ClipRRect(
         borderRadius: BorderRadius.vertical(top: topRadius),
         child: Container(
-          decoration:
-              BoxDecoration(color: _backgroundColor, boxShadow: [_shadow]),
+          decoration: BoxDecoration(
+            color: _backgroundColor,
+            boxShadow: [_kDefaultBoxShadow],
+          ),
           width: double.infinity,
           child: MediaQuery.removePadding(
             context: context,

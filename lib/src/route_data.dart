@@ -173,8 +173,8 @@ class RouteData {
     // No state: we only got a URL from the system, so probably a
     // manually-entered URL from the user.
     return RouteData(
-      routeInfo.location!,
-      pathTemplate: routeInfo.location!,
+      routeInfo.location,
+      pathTemplate: routeInfo.location,
       requestSource: RequestSource.system,
     );
   }

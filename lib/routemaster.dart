@@ -550,7 +550,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
 
   void _setHasReported(_ReportType reportType) {
     _reported = reportType;
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _reported = _ReportType.none;
     });
   }
@@ -594,7 +594,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
 
       if (_isBuilding) {
         // Schedule update
-        WidgetsBinding.instance?.addPostFrameCallback((_) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
           _updateCurrentConfiguration(
             requestSource: requestSource,
             isReplacement: isReplacement,
@@ -748,7 +748,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
           notifyListeners();
         }
 
-        WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
           if (_state.pendingNavigation != null) {
             // Retry navigation
             _navigate(
@@ -794,7 +794,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
     _rebuildRouter(context);
 
     // Already building; schedule rebuild for next frame
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateCurrentConfiguration();
     });
   }
@@ -983,10 +983,6 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
       request: routeRequest,
       lastPageOnly: true,
     );
-
-    if (result == null) {
-      return _TabNotFoundPage(routeRequest);
-    }
 
     if (result is _PagesResult) {
       assert(result.pages.length == 1);
@@ -1284,7 +1280,7 @@ class _RoutemasterStateTrackerState extends State<_RoutemasterStateTracker> {
 
       newDelegate._rebuildRouter(context);
 
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         // Dispose after this frame to allow child widgets to unsubscribe
         oldDelegate.dispose();
       });

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test_app/main.dart' as app;
 import 'package:integration_test_app/app.dart';
-import 'dart:html';
+import 'package:web/web.dart';
 
 void replaceTests({required void Function(String) expectUrl}) {
   testWidgets('After replace, skips page going back', (tester) async {

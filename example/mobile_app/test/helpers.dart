@@ -31,10 +31,10 @@ Future<void> recordUrlChanges(
 /// Simulates pressing the system back button
 Future<void> invokeSystemBack() {
   // ignore: invalid_use_of_protected_member
-  return WidgetsBinding.instance!.handlePopRoute();
+  return WidgetsBinding.instance.handlePopRoute();
 }
 
 Future<void> setSystemUrl(String url) {
   // ignore: invalid_use_of_protected_member
-  return WidgetsBinding.instance!.handlePushRoute(url);
+  return WidgetsBinding.instance.handlePushRoute(url);
 }

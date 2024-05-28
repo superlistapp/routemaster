@@ -32,18 +32,18 @@ Future<void> recordUrlChanges(
 /// Simulates pressing the system back button
 Future<void> invokeSystemBack() {
   // ignore: invalid_use_of_protected_member
-  return WidgetsBinding.instance!.handlePopRoute();
+  return WidgetsBinding.instance.handlePopRoute();
 }
 
 Future<void> setSystemUrl(String url) {
   // ignore: invalid_use_of_protected_member
-  return WidgetsBinding.instance!.handlePushRoute(url);
+  return WidgetsBinding.instance.handlePushRoute(url);
 }
 
 /// Allows us to emulate the behavior of a web browser by storing a simple
 /// stack of routes and popping them, reproducing the same behavior as a user
 /// clicking a browser back button.
-/// 
+///
 /// Skipped due to API changing in Flutter master
 // class BrowserEmulatorRouteInfoProvider
 //     extends PlatformRouteInformationProvider {
