@@ -1,8 +1,9 @@
-import 'package:routemaster/routemaster.dart';
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:routemaster/src/path_parser.dart';
-import 'fake_html.dart' if (dart.library.js) 'package:web/web.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:routemaster/routemaster.dart';
+import 'package:routemaster/src/path_parser.dart';
+import 'package:web/web.dart';
+
 import 'system_nav.dart';
 // ignore_for_file: public_member_api_docs
 
