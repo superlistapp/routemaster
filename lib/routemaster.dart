@@ -567,7 +567,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
     if (currentPages.isNotEmpty) {
       final pageEntry = currentPages.last;
       final routeData = pageEntry.routeData;
-      final currentRouteData = _state.currentConfiguration!;
+      final currentRouteData = _state.currentConfiguration;
 
       if (!isBrowserHistoryNavigation && updateHistory) {
         _state.history._didNavigate(
@@ -580,7 +580,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
         historyIndex: _state.history._index,
       );
 
-      if (currentRouteData.fullPath != routeData.fullPath) {
+      if (currentRouteData?.fullPath != routeData.fullPath) {
         for (final observer in observers.whereType<RoutemasterObserver>()) {
           observer.didChangeRoute(routeData, pageEntry._getOrCreatePage());
         }
@@ -609,8 +609,8 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
           // If the public paths match but the private paths don't, we need to
           // ensure a new history item is created
           final needsForceNavigate =
-              routeData.publicPath == currentRouteData.publicPath &&
-                  routeData.fullPath != currentRouteData.fullPath &&
+              routeData.publicPath == currentRouteData?.publicPath &&
+                  routeData.fullPath != currentRouteData?.fullPath &&
                   requestSource != RequestSource.system;
 
           if (needsForceNavigate && _reported != _ReportType.neglect) {
@@ -773,7 +773,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
     _state.stack._pageContainers = pages;
 
     final pathIsSame =
-        _state.currentConfiguration!.fullPath == pages.last.routeData.fullPath;
+        _state.currentConfiguration?.fullPath == pages.last.routeData.fullPath;
 
     _updateCurrentConfiguration(
       isReplacement: pathIsSame || isReplacement,
