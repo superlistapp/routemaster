@@ -1,3 +1,6 @@
+// Flutter 3.44 moved CupertinoPageTransitionsBuilder out of material.dart
+// (src/cupertino/route.dart) as part of the Material/Cupertino decoupling.
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// A transition for a page pop or push animation.
