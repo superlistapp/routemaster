@@ -634,7 +634,9 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
 
     final historyIndex = routeData._historyIndex;
 
-    if (kIsWeb && historyIndex != null) {
+    if (kIsWeb &&
+        historyIndex != null &&
+        history._hasEntry(historyIndex, routeData)) {
       // Navigation came from web browser back or forward buttons
       history._goToIndex(historyIndex); // coverage:ignore-line
     } else {

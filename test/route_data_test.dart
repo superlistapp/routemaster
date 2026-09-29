@@ -396,6 +396,23 @@ void main() {
     expect(routeData3.pathParameters['_id'], '1');
   });
 
+  test('Can deserialize route data from JS interop values', () {
+    final routeData = RouteData.fromRouteInformation(RouteInformation(
+      location: '/product/1',
+      state: <Object?, Object?>{
+        'pathTemplate': '/product/:_id',
+        'internalPath': '/product/1',
+        'isReplacement': false,
+        'requestSource': 'RequestSource.internal',
+        'pathParameters': <Object?, Object?>{'_id': '1'},
+        'historyIndex': 2.0,
+      },
+    ));
+
+    expect(routeData.fullPath, '/product/1');
+    expect(routeData.pathParameters, {'_id': '1'});
+  });
+
   test('Can deserialize route from JSON', () {
     const jsonStr = '''
     {

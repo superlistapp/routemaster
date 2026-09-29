@@ -68,6 +68,12 @@ class RouteHistory {
     _history.add(last);
   }
 
+  /// Whether history entry [index] is [route]. Browser entries keep the index
+  /// they were created with, so after a page reload they can point at another
+  /// route in the new history, or past its end.
+  bool _hasEntry(int index, RouteData route) =>
+      index >= 0 && index < _history.length && _history[index] == route;
+
 // coverage:ignore-start
   void _goToIndex(int index) {
     if (index == _index) {

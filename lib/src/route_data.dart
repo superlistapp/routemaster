@@ -164,9 +164,11 @@ class RouteData {
           (source) => source.toString() == requestSource,
         ),
         pathTemplate: state['pathTemplate'] as String,
-        pathParameters: (state['pathParameters'] as Map<String, dynamic>)
-            .cast<String, String>(),
-        historyIndex: state['historyIndex'] as int?,
+        // Under WASM the browser hands the state back as JS interop values:
+        // numbers arrive as doubles and maps as Map<Object?, Object?>.
+        pathParameters:
+            (state['pathParameters'] as Map).cast<String, String>(),
+        historyIndex: (state['historyIndex'] as num?)?.toInt(),
       );
     }
 
