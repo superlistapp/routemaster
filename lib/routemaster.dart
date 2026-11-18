@@ -396,6 +396,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
     final popResult = await _state.stack.maybePop<T>(result);
 
     if (popResult) {
+      _syncHistoryAfterPop();
       _updateCurrentConfiguration(updateHistory: false);
     }
 
@@ -420,6 +421,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
       final currentPages = _state.stack._getCurrentPages();
       if (currentPages.isEmpty || predicate(currentPages.last.routeData)) {
         if (hasPopped) {
+          _syncHistoryAfterPop();
           _updateCurrentConfiguration(updateHistory: false);
         }
 
@@ -428,8 +430,18 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
     } while (await doPop());
 
     if (hasPopped) {
+      _syncHistoryAfterPop();
       _updateCurrentConfiguration(updateHistory: false);
     }
+  }
+
+  /// Rewinds the history after a pop that no [Navigator] reported, such as
+  /// [PageStack.maybePop] removing the page itself.
+  void _syncHistoryAfterPop() {
+    final currentPages = _state.stack._getCurrentPages();
+    if (currentPages.isEmpty) return;
+
+    _state.history._syncAfterPop(newRoute: currentPages.last.routeData);
   }
 
   /// Pushes [path] into the navigation tree.
@@ -1514,8 +1526,25 @@ class _StackNavigatorState extends NavigatorState {
   }
 
   @override
+  void didUpdateWidget(Navigator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final oldStack = (oldWidget as _StackNavigator).stack;
+    final newStack = (widget as _StackNavigator).stack;
+    if (oldStack == newStack) return;
+
+    if (oldStack._attachedNavigator == this) {
+      oldStack._attachedNavigator = null;
+    }
+    newStack._attachedNavigator = this;
+  }
+
+  @override
   void dispose() {
-    (widget as _StackNavigator).stack._attachedNavigator = null;
+    final stack = (widget as _StackNavigator).stack;
+    if (stack._attachedNavigator == this) {
+      stack._attachedNavigator = null;
+    }
     super.dispose();
   }
 }

@@ -131,6 +131,12 @@ class RouteHistory {
     );
   }
 
+  void _syncAfterPop({required RouteData newRoute}) {
+    if (_index < 0 || _history[_index] == newRoute) return;
+
+    _onPopPage(newRoute: newRoute);
+  }
+
   void _onPopPage({required RouteData newRoute}) {
     final poppingToPreviousHistoryRoute =
         _index > 0 && _history[_index - 1] == newRoute;
