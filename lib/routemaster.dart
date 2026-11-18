@@ -393,6 +393,7 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
   @optionalTypeArgs
   Future<bool> pop<T extends Object?>([T? result]) async {
     assert(!_isDisposed);
+    _state.history._navigatorReportedPop = false;
     final popResult = await _state.stack.maybePop<T>(result);
 
     if (popResult) {
@@ -410,9 +411,11 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
     var hasPopped = false;
 
     Future<bool> doPop() async {
+      _state.history._navigatorReportedPop = false;
       final popResult = await _state.stack.maybePop();
       if (popResult) {
         hasPopped = true;
+        _syncHistoryAfterPop();
       }
       return popResult;
     }
@@ -421,7 +424,6 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
       final currentPages = _state.stack._getCurrentPages();
       if (currentPages.isEmpty || predicate(currentPages.last.routeData)) {
         if (hasPopped) {
-          _syncHistoryAfterPop();
           _updateCurrentConfiguration(updateHistory: false);
         }
 
@@ -430,7 +432,6 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
     } while (await doPop());
 
     if (hasPopped) {
-      _syncHistoryAfterPop();
       _updateCurrentConfiguration(updateHistory: false);
     }
   }
@@ -441,7 +442,9 @@ class RoutemasterDelegate extends RouterDelegate<RouteData>
     final currentPages = _state.stack._getCurrentPages();
     if (currentPages.isEmpty) return;
 
-    _state.history._syncAfterPop(newRoute: currentPages.last.routeData);
+    _state.history._syncAfterUnreportedPop(
+      newRoute: currentPages.last.routeData,
+    );
   }
 
   /// Pushes [path] into the navigation tree.
