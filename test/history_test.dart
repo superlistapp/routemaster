@@ -480,4 +480,73 @@ void main() {
     // Cannot go forward
     expect(history.canGoForward, isFalse);
   });
+
+  testWidgets('Pop goes back in history after the route map is rebuilt',
+      (tester) async {
+    final rebuildRouteMap = ValueNotifier(0);
+    final delegate = RoutemasterDelegate(
+      routesBuilder: (context) {
+        context.dependOnInheritedWidgetOfExactType<_RouteMapDependency>();
+
+        return RouteMap(
+          routes: {
+            '/': (_) => const IndexedPage(
+                  paths: ['one', 'two'],
+                  child: _CurrentStackNavigator(),
+                ),
+            '/one': (_) => const MaterialPage<void>(child: PageOne()),
+            '/one/two': (_) => const MaterialPageTwo(),
+            '/one/three': (_) => const MaterialPageThree(),
+            '/two': (_) => const MaterialPageTwo(),
+          },
+        );
+      },
+    );
+
+    await tester.pumpWidget(
+      _RouteMapDependency(
+        notifier: rebuildRouteMap,
+        child: MaterialApp.router(
+          routeInformationParser: const RoutemasterParser(),
+          routerDelegate: delegate,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    rebuildRouteMap.value++;
+    await tester.pumpAndSettle();
+
+    delegate.push('/one/two');
+    await tester.pumpAndSettle();
+
+    await delegate.pop();
+    await tester.pumpAndSettle();
+    expect(delegate.currentConfiguration!.path, '/one');
+    expect(delegate.history.canGoBack, isFalse);
+    expect(delegate.history.canGoForward, isTrue);
+
+    delegate.push('/one/three');
+    await tester.pumpAndSettle();
+
+    delegate.history.back();
+    await tester.pumpAndSettle();
+    expect(delegate.currentConfiguration!.path, '/one');
+  });
+}
+
+class _RouteMapDependency extends InheritedNotifier<ValueNotifier<int>> {
+  const _RouteMapDependency({
+    required ValueNotifier<int> notifier,
+    required Widget child,
+  }) : super(notifier: notifier, child: child);
+}
+
+class _CurrentStackNavigator extends StatelessWidget {
+  const _CurrentStackNavigator();
+
+  @override
+  Widget build(BuildContext context) {
+    return PageStackNavigator(stack: IndexedPage.of(context).currentStack);
+  }
 }
