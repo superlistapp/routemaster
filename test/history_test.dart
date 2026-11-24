@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:routemaster/routemaster.dart';
@@ -532,6 +534,57 @@ void main() {
     delegate.history.back();
     await tester.pumpAndSettle();
     expect(delegate.currentConfiguration!.path, '/one');
+  });
+
+  testWidgets('Pop closes a dialog after the route map is rebuilt',
+      (tester) async {
+    final rebuildRouteMap = ValueNotifier(0);
+    final delegate = RoutemasterDelegate(
+      routesBuilder: (context) {
+        context.dependOnInheritedWidgetOfExactType<_RouteMapDependency>();
+
+        return RouteMap(
+          routes: {
+            '/': (_) => const IndexedPage(
+                  paths: ['one', 'two'],
+                  child: _CurrentStackNavigator(),
+                ),
+            '/one': (_) => const MaterialPage<void>(child: PageOne()),
+            '/one/two': (_) => const MaterialPageTwo(),
+            '/two': (_) => const MaterialPageTwo(),
+          },
+        );
+      },
+    );
+
+    await tester.pumpWidget(
+      _RouteMapDependency(
+        notifier: rebuildRouteMap,
+        child: MaterialApp.router(
+          routeInformationParser: const RoutemasterParser(),
+          routerDelegate: delegate,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    rebuildRouteMap.value++;
+    await tester.pumpAndSettle();
+
+    delegate.push('/one/two');
+    await tester.pumpAndSettle();
+
+    unawaited(showDialog<void>(
+      context: tester.element(find.byType(PageTwo)),
+      useRootNavigator: false,
+      builder: (_) => const Text('dialog'),
+    ));
+    await tester.pumpAndSettle();
+
+    await delegate.pop();
+    await tester.pumpAndSettle();
+    expect(find.text('dialog'), findsNothing);
+    expect(delegate.currentConfiguration!.path, '/one/two');
   });
 }
 
