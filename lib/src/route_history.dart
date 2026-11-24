@@ -131,7 +131,24 @@ class RouteHistory {
     );
   }
 
+  /// Whether a [Navigator] reported the pop currently being processed.
+  bool _navigatorReportedPop = false;
+
+  /// Rewinds the history after a pop that no [Navigator] reported.
+  ///
+  /// With system navigation the browser owns the history, and a pop reported
+  /// by a [Navigator] has already been handled in [_onPopPage].
+  void _syncAfterUnreportedPop({required RouteData newRoute}) {
+    if (_navigatorReportedPop) return;
+    if (kIsWeb && SystemNav.enabled) return;
+    if (_index < 0 || _history[_index] == newRoute) return;
+
+    _onPopPage(newRoute: newRoute);
+  }
+
   void _onPopPage({required RouteData newRoute}) {
+    _navigatorReportedPop = true;
+
     final poppingToPreviousHistoryRoute =
         _index > 0 && _history[_index - 1] == newRoute;
 
